@@ -12,6 +12,12 @@ class GetOnePostResponse {
     photo = json['photo'];
   }
   num? id;
+
+  @override
+  String toString() {
+    return 'GetOnePostResponse{id: $id, title: $title, body: $body, photo: $photo}';
+  }
+
   String? title;
   String? body;
   String? photo;
