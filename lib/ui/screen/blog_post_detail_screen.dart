@@ -1,8 +1,8 @@
 import 'package:blog_rest_api_provider/data/service/blog_api_service.dart';
 import 'package:blog_rest_api_provider/provider/get_complete_post/get_complete_post_notifier.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../data/model/get_one_post_response.dart';
 import '../../provider/get_complete_post/get_complete_post_state.dart';
 
@@ -25,7 +25,28 @@ class _BlogPostDetailScreenState extends State<BlogPostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Consumer<GetCompletePostNotifier>(
+          builder: (_,getCompletePostNotifier,__){
+            GetCompletePostState getCompletePostState = getCompletePostNotifier.getCompletePostState;
+            if(getCompletePostState is GetCompletePostSuccess){
+              GetOnePostResponse getOnePostResponse = getCompletePostState.getOnePostResponse;
+              return Text(getOnePostResponse.title ?? '');
+            }
+            else if(getCompletePostState is GetCompletePostFailed){
+              return Text(getCompletePostState.errorMessage);
+            }
+            return DotsIndicator(
+              dotsCount: 5,
+              decorator: const DotsDecorator(
+                activeColor: Colors.blue,
+                color: Colors.white
+              ),
+            );
+          }
+        )
+
+      ),
       body: Consumer<GetCompletePostNotifier>(
         builder: (_,getCompletePostNotifier,__){
           GetCompletePostState getCompletePostState = getCompletePostNotifier.getCompletePostState;
@@ -53,7 +74,7 @@ class _BlogPostDetailScreenState extends State<BlogPostDetailScreen> {
                 const Divider(),
                 ElevatedButton(onPressed: (){
                   _getBlogDetail(widget.id);
-                }, child: const Text('Try Again'))
+                  }, child: const Text('Try Again'))
               ],
             );
 
