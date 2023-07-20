@@ -11,7 +11,11 @@ class BlogUploadNotifier extends ChangeNotifier{
   void upload({required String title,required String body,required FormData data}) async{
     try{
       uploadUIState = UploadUILoading(0);
-        BlogUploadResponse blogUploadResponse = await _blogApiService.uploadPost(title: title, body: body, data: data);
+        BlogUploadResponse blogUploadResponse = await _blogApiService.uploadPost(title: title, body: body, data: data,
+        sendProgress: (int send,int size){
+          int progress =((send/size)*100).toInt();
+          uploadUIState=UploadUILoading(progress);
+        });
         uploadUIState = UploadUISuccess(blogUploadResponse);
     }
     catch(e){
