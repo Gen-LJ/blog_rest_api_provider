@@ -17,6 +17,7 @@ class GetAllPostNotifier extends ChangeNotifier{
     }
     catch(e){
       getAllPostState=GetAllPostFailed(e.toString());
+      notifyListeners();
     }
   }
 

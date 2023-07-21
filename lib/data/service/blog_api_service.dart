@@ -1,7 +1,7 @@
 import 'package:blog_rest_api_provider/data/model/get_all_post_response.dart';
 import 'package:blog_rest_api_provider/data/model/get_one_post_response.dart';
 import 'package:dio/dio.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 import '../model/blog_upload_response.dart';
 
 class BlogApiService {
@@ -10,15 +10,14 @@ class BlogApiService {
 
   BlogApiService() {
     dio = Dio();
-    dio.interceptors.add(PrettyDioLogger(
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: true
-    ));
+    dio.interceptors.add(DioCacheManager(
+      CacheConfig(baseUrl: baseUrl)
+    ).interceptor);
   }
 
   Future<List<GetAllPostResponse>> getAllPosts() async {
-    final postResponse = await dio.get('${baseUrl}posts');
+    final postResponse = await dio.get('${baseUrl}posts',
+    options: buildCacheOptions(Duration(days: 7)));
     final postList = (postResponse.data as List).map((e) {
       return GetAllPostResponse.fromJson(e);
     }).toList();
@@ -26,7 +25,8 @@ class BlogApiService {
   }
 
   Future<GetOnePostResponse> getOnePost(int id) async {
-    final postResponse = await dio.get('${baseUrl}post?id=$id');
+    final postResponse = await dio.get('${baseUrl}post?id=$id',
+    options: buildCacheOptions(Duration(days: 7)));
     final postList = (postResponse.data as List);
     final post = GetOnePostResponse.fromJson(postList[0]);
     return post;
